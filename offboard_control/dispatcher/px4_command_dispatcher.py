@@ -48,7 +48,8 @@ class Px4CommandDispatcher(ICommandDispatcher):
         self.node.get_logger().debug("Px4 Disarm command send")
 
     def take_off(self, height=10.0) -> None:
-        self.publish_command(VehicleCommand.VEHICLE_CMD_NAV_TAKEOFF, param1 = 1.0, param2 = 3.0, param7 = height)
+        # self.publish_command(VehicleCommand.VEHICLE_CMD_NAV_TAKEOFF, param1 = 1.0, param2 = 3.0, param7 = height)
+        self.publish_command(VehicleCommand.VEHICLE_CMD_NAV_TAKEOFF,param1=1.0,param7=height)
         self.node.get_logger().debug("Px4 Takeoff command send")
 
     def offboard(self) -> None:

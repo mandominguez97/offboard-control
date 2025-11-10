@@ -78,7 +78,7 @@ class MultiOffboardController(IMultiOffboardController):
         pass
 
 
-    def take_off_all(self, height=20.0):
+    def take_off_all(self, height=10.0):
 
         future = Future()
         futures = []
@@ -320,10 +320,12 @@ class MultiOffboardController(IMultiOffboardController):
     
     def go_to_all_local(
             self,
-            gps_origin: GeoPose,
+            gps_origin: GeoPose, 
             poses: list[Pose],
             n_points = 80,
-            speed = 2.0
+            speed = 2.0,
+            final_yaw: list[float] = [],
+            yaw_fraction = 0.25
         ):
 
         future = Future()
@@ -331,8 +333,8 @@ class MultiOffboardController(IMultiOffboardController):
         
         self.node.get_logger().debug(f"going to {[pose.position for pose in poses]}")
 
-        for controller, pose in zip(self.controllers, poses):
-            futures.append(controller.go_to_local(gps_origin, pose, n_points, speed))
+        for controller, pose, yaw in zip(self.controllers, poses, final_yaw):
+            futures.append(controller.go_to_local(gps_origin, pose, n_points, speed, yaw, yaw_fraction))
 
         def callback():
             
@@ -602,6 +604,11 @@ class MultiOffboardController(IMultiOffboardController):
             
         timer = self.node.create_timer(self.command_period, callback)
         return future
+    
+
+    def offboard_mode_all(self):
+        for controller in self.controllers:
+            controller.offboard_mode()
     
 
     
